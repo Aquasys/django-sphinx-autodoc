@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import os
 from setuptools import setup, find_packages
 
 setup(
@@ -8,6 +9,8 @@ setup(
     author='Adrien Lemaire',
     author_email='lemaire.adrien@gmail.com',
     description='Autodoc all apps from a project to Sphinx',
+    long_description=open(os.path.join(os.path.dirname(__file__), 
+                           'README.rst')).read(),
     url='http://github.com/Fandekasp/django-sphinx-autodoc',
     packages=find_packages(),
     include_package_data=True,
