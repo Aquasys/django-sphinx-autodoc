@@ -55,7 +55,6 @@ class Modules(object):
         """ Add title to modules.rst, mandatory """
         symbol_line = "=" * len(self.fname)
         l_title = self.add_lf([symbol_line, self.fname, symbol_line, "", ""])
-        import ipdb; ipdb.set_trace()
         l_title.extend(self.l_file)
         self.l_file = l_title
 
@@ -91,13 +90,13 @@ class App(object):
     def get_modules(self):
         """Scan the repository for any python files"""
         try:
-            return [name for name in os.listdir(self.name) if
-                    name.endswith(".py")]
+            excludes = ["__init__.py"]
+            return [name.split(".py")[0] for name in os.listdir(self.name)
+                       if name.endswith(".py") and name not in excludes]
         except OSError:
             # Currently we just add internal apps (located within the project)
             self.is_internal = False
-            pass
-
+            pass 
 
 try:
     # Get the list of applications from the settings
@@ -123,7 +122,7 @@ try:
     # append the new file name to the index.rst
     for i, line in enumerate(l_index):
         if ":maxdepth: 2" in line:
-            l_index.insert(i + 2, "  %s\n" % f_modules.fname)
+            l_index.insert(i + 2, "    %s\n" % f_modules.fname)
             break
     f_index = open("index.rst", "w")
     f_index.writelines(l_index)
