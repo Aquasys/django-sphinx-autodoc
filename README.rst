@@ -10,9 +10,13 @@ in your settings.INSTALLED_APP.
 If you're using Django with Sphinx and want to autodoc all these apps in a wink
 of an eye, then this app is for you.
 
+This application fits well with django-sphinxdoc (do pip install django-sphinxdoc)
+
 
 How it works
 ------------
+
+Copy the generate_autodoc.py file in your project directory, then execute it.
 
 It will scrape all your .py files in each application listed by INSTALLED_APP,
 then add automodules in your DS_ROOT/modules.rst.
