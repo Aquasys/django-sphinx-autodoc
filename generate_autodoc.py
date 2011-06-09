@@ -97,11 +97,13 @@ if __name__ == '__main__':
     # Define some variables
     settings.DS_ROOT = getattr(settings, "DS_ROOT", os.path.join(HERE, "doc"))
     settings.DS_MASTER_DOC = getattr(settings, "DS_MASTER_DOC", "index.rst")
+    settings.EXCLUDED_APPS = getattr(settings, "EXCLUDED_APPS", [])
 
     # Create a file for new modules
     f_modules = Modules()
     # Write all the apps autodoc in the newly created file
-    [f_modules.add_app(App(name)) for name in settings.INSTALLED_APPS]
+    l_apps = set(settings.INSTALLED_APPS) - set(settings.EXCLUDED_APPS)
+    [f_modules.add_app(App(name)) for name in l_apps]
 
     # Go to the doc directory and open the index
     os.chdir(settings.DS_ROOT)
