@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-sphinx-autodoc',
-    version="0.0",
+    version="0.1",
     author='Adrien Lemaire',
     author_email='lemaire.adrien@gmail.com',
     description='Autodoc all apps from a project to Sphinx',

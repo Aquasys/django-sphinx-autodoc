@@ -23,6 +23,7 @@ class Modules(object):
 
     def __init__(self):
         self.l_file = []
+        self.fname = "auto_modules"
 
     def write(self):
         """Write the created list in the new file"""
@@ -30,13 +31,13 @@ class Modules(object):
         f.writelines(self.l_file)
         f.close()
 
-    def set_name(self, l):
+    def set_name(self, toctree):
         """
-        Verify that a "modules" file is not in the toctree, otherwise rename
-        it in "auto_modules"
+        Verify that a "auto_modules" file is in the toctree, and append it
+        otherwise
         """
-        re_m = re.compile("modules")
-        self.fname = re_m.findall("".join(l)) and "auto_modules" or "modules"
+        re_m = re.compile("auto_modules")
+        self.in_index = re_m.findall("".join(toctree)) and True or False
         # Now that we know the title, append it at the beginning of the file
         self.set_title()
 
@@ -111,10 +112,11 @@ if __name__ == '__main__':
     f_modules.write()
 
     # append the new file name to the index.rst
-    for i, line in enumerate(l_index):
-        if ":maxdepth: 2" in line:
-            l_index.insert(i + 2, "    %s\n" % f_modules.fname)
-            break
+    if not f_modules.in_index:
+        for i, line in enumerate(l_index):
+            if ":maxdepth: 2" in line:
+                l_index.insert(i + 2, "    %s\n" % f_modules.fname)
+                break
     f_index = open("index.rst", "w")
     f_index.writelines(l_index)
     f_index.close()

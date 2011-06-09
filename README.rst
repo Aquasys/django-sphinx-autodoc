@@ -24,7 +24,6 @@ TODO
 v1
 ++
 
-- If modules or automodules already exist, then do not add a new line to index
 - create settings.py to store some variables
    - SPHINX_INDEX : default to 'index.rst', but you might have changed it
    - MODULES_NAME : name for the modules.rst file if you already use this name
