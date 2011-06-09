@@ -6,12 +6,12 @@
 import os
 import re
 
-project_path = os.path.realpath(os.path.dirname(__file__))
+HERE = os.path.realpath(os.path.dirname(__file__))
 
 # from project
 try:
     # Get the list of applications from the settings
-    from settings import INSTALLED_APPS as l_apps
+    import settings
 except ImportError:
     raise ImportError("The script should be run from the project root")
 
@@ -94,15 +94,18 @@ class App(object):
 
 
 if __name__ == '__main__':
+    # Define some variables
+    settings.DS_ROOT = getattr(settings, "DS_ROOT", os.path.join(HERE, "doc"))
+    settings.DS_MASTER_DOC = getattr(settings, "DS_MASTER_DOC", "index.rst")
+
     # Create a file for new modules
     f_modules = Modules()
     # Write all the apps autodoc in the newly created file
-    [f_modules.add_app(App(name)) for name in l_apps]
+    [f_modules.add_app(App(name)) for name in settings.INSTALLED_APPS]
 
     # Go to the doc directory and open the index
-    path = os.path.join(project_path, "doc")
-    os.chdir(path)
-    f_index = open("index.rst", "r")
+    os.chdir(settings.DS_ROOT)
+    f_index = open(settings.DS_MASTER_DOC, "r")
     l_index = f_index.readlines()
     # Set the file name for modules
     f_modules.set_name(l_index)
@@ -117,6 +120,6 @@ if __name__ == '__main__':
             if ":maxdepth: 2" in line:
                 l_index.insert(i + 2, "    %s\n" % f_modules.fname)
                 break
-    f_index = open("index.rst", "w")
+    f_index = open(settings.DS_MASTER_DOC, "w")
     f_index.writelines(l_index)
     f_index.close()
