@@ -27,7 +27,7 @@ class Modules(object):
 
     def write(self):
         """Write the created list in the new file"""
-        f = open(self.fname, "w+")
+        f = open("%s.rst" % self.fname, "w+")
         f.writelines(self.l_file)
         f.close()
 
@@ -59,6 +59,9 @@ class Modules(object):
         # Write the name of the application
         template = self.add_lf([app.name, "=" * len(app.name), ""])
 
+        if not app.modules:
+            print "no modules in app %s" % app.name
+            return
         # Write an automodule for each of its modules
         for module in app.modules:
             template += self.add_lf([
@@ -66,6 +69,7 @@ class Modules(object):
                 module, "-" * len(module), "",
                 # automodule
                 ".. automodule:: %s.%s" % (app.name, module),
+                "    :deprecated:",
                 "    :members:",
                 "    :undoc-members:",
                 "    :show-inheritance:", ""
@@ -84,20 +88,35 @@ class App(object):
     def get_modules(self):
         """Scan the repository for any python files"""
         try:
-            return [name.split(".py")[0] for name in os.listdir(self.name)
+            modules = [name.split(".py")[0] for name in os.listdir(self.name)
                 if name not in settings.DS_EXCLUDED_MODULES and
                    name.endswith(".py")]
+            # Remove all irrelevant modules. A module is relevant if he
+            # contains a function or class
+            not_relevant = []
+            for module in modules:
+                f_module = open("%s/%s.py" % (self.name, module), "r")
+                content = f_module.read()
+                f_module.close()
+                keywords = ["def", "class"]
+                relevant = sum([value in content for value in keywords])
+                if not relevant:
+                    not_relevant.append(module)
+                    print "%s.%s not relevant, removed" % (self.name, module)
+            [modules.remove(module) for module in not_relevant]
+            return modules
         except OSError:
             # Currently we just add internal apps (located within the project)
+            # External app are ignored
             self.is_internal = False
-            pass 
+            pass
 
 
 if __name__ == '__main__':
     # Define some variables
     settings.DS_ROOT = getattr(settings, "DS_ROOT", os.path.join(HERE, "doc"))
     settings.DS_MASTER_DOC = getattr(settings, "DS_MASTER_DOC", "index.rst")
-    settings.DS_FILENAME = getattr(settings, "DS_FILENAME", "auto_modules.rst")
+    settings.DS_FILENAME = getattr(settings, "DS_FILENAME", "auto_modules")
     settings.DS_EXCLUDED_APPS = getattr(settings, "DS_EXCLUDED_APPS", [])
     settings.DS_EXCLUDED_MODULES = getattr(settings, "DS_EXCLUDED_MODULES",
         ["__init__.py", ])
