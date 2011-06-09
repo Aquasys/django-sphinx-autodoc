@@ -23,11 +23,11 @@ class Modules(object):
 
     def __init__(self):
         self.l_file = []
-        self.fname = "auto_modules"
+        self.fname = settings.DS_FILENAME
 
     def write(self):
         """Write the created list in the new file"""
-        f = open("%s.rst" % self.fname, "w+")
+        f = open(self.fname, "w+")
         f.writelines(self.l_file)
         f.close()
 
@@ -36,7 +36,7 @@ class Modules(object):
         Verify that a "auto_modules" file is in the toctree, and append it
         otherwise
         """
-        re_m = re.compile("auto_modules")
+        re_m = re.compile(settings.DS_FILENAME)
         self.in_index = re_m.findall("".join(toctree)) and True or False
         # Now that we know the title, append it at the beginning of the file
         self.set_title()
@@ -85,7 +85,7 @@ class App(object):
         """Scan the repository for any python files"""
         try:
             return [name.split(".py")[0] for name in os.listdir(self.name)
-                if name not in settings.EXCLUDED_MODULES and
+                if name not in settings.DS_EXCLUDED_MODULES and
                    name.endswith(".py")]
         except OSError:
             # Currently we just add internal apps (located within the project)
@@ -97,14 +97,15 @@ if __name__ == '__main__':
     # Define some variables
     settings.DS_ROOT = getattr(settings, "DS_ROOT", os.path.join(HERE, "doc"))
     settings.DS_MASTER_DOC = getattr(settings, "DS_MASTER_DOC", "index.rst")
-    settings.EXCLUDED_APPS = getattr(settings, "EXCLUDED_APPS", [])
-    settings.EXCLUDED_MODULES = getattr(settings, "EXCLUDED_MODULES",
+    settings.DS_FILENAME = getattr(settings, "DS_FILENAME", "auto_modules.rst")
+    settings.DS_EXCLUDED_APPS = getattr(settings, "DS_EXCLUDED_APPS", [])
+    settings.DS_EXCLUDED_MODULES = getattr(settings, "DS_EXCLUDED_MODULES",
         ["__init__.py", ])
 
     # Create a file for new modules
     f_modules = Modules()
     # Write all the apps autodoc in the newly created file
-    l_apps = set(settings.INSTALLED_APPS) - set(settings.EXCLUDED_APPS)
+    l_apps = set(settings.INSTALLED_APPS) - set(settings.DS_EXCLUDED_APPS)
     [f_modules.add_app(App(name)) for name in l_apps]
 
     # Go to the doc directory and open the index

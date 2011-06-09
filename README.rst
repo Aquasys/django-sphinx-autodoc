@@ -24,23 +24,22 @@ You can modify some of the settings used by django-sphinx-autodoc:
 
 - **DS_ROOT**: root path for documentation (default to project_dir/doc)
 - **DS_MASTER_DOC**: name of your master document (default to "index.rst")
-- **EXCLUDED_APPS**: list of applications to exclude (default to [])
-- **EXCLUDED_MODULES**: list of files to exclude (default to ["__init__.py"])
+- **DS_FILENAME**: name for the modules (default to "auto_modules.rst")
+- **DS_EXCLUDED_APPS**: list of applications to exclude (default to [])
+- **DS_EXCLUDED_MODULES**: list of files to exclude (default to ["__init__.py"])
 
 
 TODO
 ----
 
-v1
+v0.1
 ++
 
-- create settings.py to store some variables
-   - MODULES_NAME : name for the modules.rst file if you already use this name
 - Include external apps (currently only internal apps, located in the project
   root directory)
 - Write tests
 
-v2
+v0.2
 ++
 
 Django command extension to update the autodoc
