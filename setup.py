@@ -16,9 +16,11 @@ setup(
     include_package_data=True,
     classifiers=[
         "Framework :: Django",
+        "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "Intended Audience :: System Administrators",
         "Operating System :: OS Independent",
-        "Topic :: Software Development"
+        "Topic :: Software Development",
+        "Programming Language :: Python",
     ],
 )
