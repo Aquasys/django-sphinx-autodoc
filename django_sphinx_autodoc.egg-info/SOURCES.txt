@@ -1,0 +1,5 @@
+setup.py
+django_sphinx_autodoc.egg-info/PKG-INFO
+django_sphinx_autodoc.egg-info/SOURCES.txt
+django_sphinx_autodoc.egg-info/dependency_links.txt
+django_sphinx_autodoc.egg-info/top_level.txt
