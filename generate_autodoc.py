@@ -10,17 +10,10 @@ project_path = os.path.realpath(os.path.dirname(__file__))
 
 # from project
 try:
-    import settings
-except ImportError:  # Is it really useful ?
-    try:
-        # Let's supppose the script is in PROJECT/django-sphinx-autodoc/
-        import sys
-        project_path = os.path.realpath(os.path.join(project_path, '..'))
-        # Add project path to PYTHONPATH
-        sys.path.insert(0, project_path)
-        import settings  # NOQA
-    except ImportError:
-        raise ImportError("The script should be run from the project root")
+    # Get the list of applications from the settings
+    from settings import INSTALLED_APPS as l_apps
+except ImportError:
+    raise ImportError("The script should be run from the project root")
 
 
 class Modules(object):
@@ -98,10 +91,8 @@ class App(object):
             self.is_internal = False
             pass 
 
-try:
-    # Get the list of applications from the settings
-    from settings import INSTALLED_APPS as l_apps
 
+if __name__ == '__main__':
     # Create a file for new modules
     f_modules = Modules()
     # Write all the apps autodoc in the newly created file
@@ -127,5 +118,3 @@ try:
     f_index = open("index.rst", "w")
     f_index.writelines(l_index)
     f_index.close()
-except AttributeError, e:
-    print e
