@@ -84,9 +84,9 @@ class App(object):
     def get_modules(self):
         """Scan the repository for any python files"""
         try:
-            excludes = ["__init__.py"]
             return [name.split(".py")[0] for name in os.listdir(self.name)
-                       if name.endswith(".py") and name not in excludes]
+                if name not in settings.EXCLUDED_MODULES and
+                   name.endswith(".py")]
         except OSError:
             # Currently we just add internal apps (located within the project)
             self.is_internal = False
@@ -98,6 +98,8 @@ if __name__ == '__main__':
     settings.DS_ROOT = getattr(settings, "DS_ROOT", os.path.join(HERE, "doc"))
     settings.DS_MASTER_DOC = getattr(settings, "DS_MASTER_DOC", "index.rst")
     settings.EXCLUDED_APPS = getattr(settings, "EXCLUDED_APPS", [])
+    settings.EXCLUDED_MODULES = getattr(settings, "EXCLUDED_MODULES",
+        ["__init__.py", ])
 
     # Create a file for new modules
     f_modules = Modules()
