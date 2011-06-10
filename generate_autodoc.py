@@ -18,7 +18,7 @@ except ImportError:
 
 class Modules(object):
     """
-    modules.rst file to store all the apps automodules
+    auto_modules.rst file to store all the apps automodules
     """
 
     def __init__(self):
@@ -54,30 +54,34 @@ class Modules(object):
 
     def add_app(self, app):
         """template of application autodoc"""
-        if not app.is_internal:
-            return
-        # Write the name of the application
-        template = self.add_lf([app.name, "=" * len(app.name), ""])
-        # Description of the application if it exists
-        if app.has_description():
-            template += ".. automodule:: %s\n" % app.name
 
-        if not app.modules:
-            template += ".. warning:: This app has no documentation\n"
+        if not app.path:
+            # App couldn't be documented
+            #template += ".. error:: This app couldn't be documented\n\n"
+# TODO Most themes doesn't style error, need to custom it
+            template = ".. warning:: '%s' couldn't be documented\n\n" % app.name  # NOQA
+        else:
+            # Write the name of the application
+            template = self.add_lf([app.name, "=" * len(app.name), ""])
 
+            if app.has_description():
+                # Description of the application if it exists
+                template += ".. automodule:: %s\n\n" % app.name
+            if not app.modules:
+                template += ".. warning:: This app has no documentation\n\n"
 
-        # Write an automodule for each of its modules
-        for module in app.modules:
-            template += self.add_lf([
-                # title of the module
-                module, "-" * len(module), "",
-                # automodule
-                ".. automodule:: %s.%s" % (app.name, module),
-                "    :deprecated:",
-                "    :members:",
-                "    :undoc-members:",
-                "    :show-inheritance:", ""
-            ])
+            # Write an automodule for each of its modules
+            for module in app.modules:
+                template += self.add_lf([
+                    # title of the module
+                    module, "-" * len(module), "",
+                    # automodule
+                    ".. automodule:: %s.%s" % (app.name, module),
+                    "    :deprecated:",
+                    "    :members:",
+                    "    :undoc-members:",
+                    "    :show-inheritance:", "",
+                ])
         self.l_file.extend(template)
 
 
@@ -86,38 +90,44 @@ class App(object):
 
     def __init__(self, name):
         self.name = name
-        self.is_internal = True
+        self.path = self.get_path()
         self.modules = self.get_modules()
+
+    def get_path(self):
+        try:
+            return __import__(self.name).__path__[0]
+        except ImportError:
+            print "The application %s couldn't be autodocumented" % self.name
+            return False
 
     def get_modules(self):
         """Scan the repository for any python files"""
-        try:
-            modules = [name.split(".py")[0] for name in os.listdir(self.name)
-                if name not in settings.DS_EXCLUDED_MODULES and
-                   name.endswith(".py")]
-            # Remove all irrelevant modules. A module is relevant if he
-            # contains a function or class
-            not_relevant = []
-            for module in modules:
-                f_module = open("%s/%s.py" % (self.name, module), "r")
-                content = f_module.read()
-                f_module.close()
-                keywords = ["def", "class"]
-                relevant = sum([value in content for value in keywords])
-                if not relevant:
-                    not_relevant.append(module)
-                    print "%s.%s not relevant, removed" % (self.name, module)
-            [modules.remove(module) for module in not_relevant]
-            return modules
-        except OSError:
-            # Currently we just add internal apps (located within the project)
-            # External app are ignored
-            self.is_internal = False
-            pass
+        if not self.path:
+            return []
+        # Move inside the application
+        os.chdir(self.path)
+
+        modules = [f.split(".py")[0] for f in os.listdir(".") if f not
+                   in settings.DS_EXCLUDED_MODULES and f.endswith(".py")]
+        # Remove all irrelevant modules. A module is relevant if he
+        # contains a function or class
+        not_relevant = []
+        for module in modules:
+            f_module = open("%s.py" % module, "r")
+            content = f_module.read()
+            f_module.close()
+            keywords = ["def", "class"]
+            relevant = sum([value in content for value in keywords])
+            if not relevant:
+                not_relevant.append(module)
+                print "%s.%s not relevant, removed" % (self.name, module)
+        [modules.remove(module) for module in not_relevant]
+        return modules
+
 
     def has_description(self):
         """Get the application docstring from __init__.py if it exists"""
-        f_init = open("%s/__init__.py" % self.name, "r")
+        f_init = open("%s/__init__.py" % self.path, "r")
         content = f_init.read()
         if '"""' in content or "'''" in content:
             return True

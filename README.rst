@@ -47,9 +47,7 @@ You can modify some of the settings used by django-sphinx-autodoc:
 TODO
 ----
 
-- Include external apps (currently only internal apps, located in the project
-  root directory)
 - Write tests
 - improve the not_relevant stuff to auto exclude a file without class or def
-- 
+- improve disposition of applications
 - Django command extension to update the autodoc
