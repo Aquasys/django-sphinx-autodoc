@@ -10,7 +10,7 @@ in your settings.INSTALLED_APP.
 If you're using Django with Sphinx and want to autodoc all these apps in a wink
 of an eye, then this app is for you.
 
-An awesome combinaison for documenting your project would be:
+A good combinaison for documenting your project would be:
  - **sphinx**
  - **django-sphinx-autodoc** to generate the doc from your applications
  - **django-sphinxdoc** to integrate the sphinx doc in your website
@@ -24,6 +24,11 @@ Copy the generate_autodoc.py file in your project directory, then execute it.
 It will scrape all your .py files in each application listed by INSTALLED_APP,
 then add automodules in your DS_ROOT/modules.rst.
 
+You will then see your applications grouped in 2 different categories:
+
+- **internal application** is an application located in your project directory
+- **external application** is an app which is somewhere in your pythonpath
+  (preferably in your virtualenv)
 
 Good Practices
 --------------
@@ -49,5 +54,4 @@ TODO
 
 - Write tests
 - improve the not_relevant stuff to auto exclude a file without class or def
-- improve disposition of applications
 - Django command extension to update the autodoc

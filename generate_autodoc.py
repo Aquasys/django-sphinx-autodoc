@@ -22,16 +22,25 @@ class Modules(object):
     """
 
     def __init__(self):
-        self.l_file = []
+        self.internal_apps = []
+        self.external_apps = []
         self.fname = settings.DS_FILENAME
 
     def write(self):
         """Write the created list in the new file"""
         f = open("%s.rst" % self.fname, "w+")
-        f.writelines(self.l_file)
+        title = "Internal Applications"
+        symbol_line = "=" * len(name)
+        l_file = self.add_lf([symbol_line, title, symbol_line, "", ""])
+        l_file.extend(self.internal_apps)
+        title = "External Applications"
+        external_title = self.add_lf([symbol_line, title, symbol_line, "", ""])
+        l_file.extend(external_title)
+        l_file.extend(self.external_apps)
+        f.writelines(l_file)
         f.close()
 
-    def set_name(self, toctree):
+    def add_to_toctree(self, toctree):
         """
         Verify that a "auto_modules" file is in the toctree, and append it
         otherwise
@@ -39,18 +48,10 @@ class Modules(object):
         re_m = re.compile(settings.DS_FILENAME)
         self.in_index = re_m.findall("".join(toctree)) and True or False
         # Now that we know the title, append it at the beginning of the file
-        self.set_title()
 
     def add_lf(self, l):
         """Append line feed \n to all elements of the given list"""
         return ["%s\n" % line for line in l]
-
-    def set_title(self):
-        """ Add title to auto_modules.rst, mandatory """
-        symbol_line = "=" * len(self.fname)
-        l_title = self.add_lf([symbol_line, self.fname, symbol_line, "", ""])
-        l_title.extend(self.l_file)
-        self.l_file = l_title
 
     def add_app(self, app):
         """template of application autodoc"""
@@ -82,7 +83,10 @@ class Modules(object):
                     "    :undoc-members:",
                     "    :show-inheritance:", "",
                 ])
-        self.l_file.extend(template)
+        if app.is_internal:
+            self.internal_apps.extend(template)
+        else:
+            self.external_apps.extend(template)
 
 
 class App(object):
@@ -90,10 +94,12 @@ class App(object):
 
     def __init__(self, name):
         self.name = name
+        self.is_internal = self.name in os.listdir(HERE)
         self.path = self.get_path()
         self.modules = self.get_modules()
 
     def get_path(self):
+        """return absolute path for this application"""
         try:
             return __import__(self.name).__path__[0]
         except ImportError:
@@ -155,7 +161,7 @@ if __name__ == '__main__':
         f_index = open(settings.DS_MASTER_DOC, "r")
         l_index = f_index.readlines()
         # Set the file name for modules
-        f_modules.set_name(l_index)
+        f_modules.add_to_toctree(l_index)
         f_index.close()
     except IOError:
         raise IOError("No file %s/%s exists, please fix it" %
