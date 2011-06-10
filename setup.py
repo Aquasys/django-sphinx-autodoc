@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='django-sphinx-autodoc',
@@ -11,8 +11,9 @@ setup(
     description='Autodoc all apps from a project to Sphinx',
     long_description=open(os.path.join(os.path.dirname(__file__),
                            'README.rst')).read(),
-    url='http://github.com/Fandekasp/django-sphinx-autodoc/',
-    packages=['sphinx-autodoc'],
+    url='http://github.com/Fandekasp/django-sphinx-autodoc',
+    packages=find_packages(),
+    include_package_data=True,
     classifiers=[
         "Framework :: Django",
         "Environment :: Web Environment",

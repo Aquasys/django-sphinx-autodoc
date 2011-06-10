@@ -3,14 +3,17 @@ Django-Sphinx-autodoc
 =====================
 
 
-Django is awesome in that way you can reuse a lot of applications in your
+Django is very nice in that way you can reuse a lot of applications in your
 projects. It means for big projects that you'll get a long list of applications
 in your settings.INSTALLED_APP.
 
 If you're using Django with Sphinx and want to autodoc all these apps in a wink
 of an eye, then this app is for you.
 
-This application fits well with django-sphinxdoc (do pip install django-sphinxdoc)
+An awesome combinaison for documenting your project would be:
+ - **sphinx**
+ - **django-sphinx-autodoc** to generate the doc from your applications
+ - **django-sphinxdoc** to integrate the sphinx doc in your website
 
 
 How it works
@@ -20,6 +23,14 @@ Copy the generate_autodoc.py file in your project directory, then execute it.
 
 It will scrape all your .py files in each application listed by INSTALLED_APP,
 then add automodules in your DS_ROOT/modules.rst.
+
+
+Good Practices
+--------------
+
+Add a docstring in your application's __init__.py file to describe it.
+django-sphinx-autodoc will automatically scrape it for you.
+
 
 Settings
 --------
@@ -36,15 +47,9 @@ You can modify some of the settings used by django-sphinx-autodoc:
 TODO
 ----
 
-v1
-++
-
 - Include external apps (currently only internal apps, located in the project
   root directory)
 - Write tests
 - improve the not_relevant stuff to auto exclude a file without class or def
-
-v2
-++
-
-Django command extension to update the autodoc
+- 
+- Django command extension to update the autodoc

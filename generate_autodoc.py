@@ -46,7 +46,7 @@ class Modules(object):
         return ["%s\n" % line for line in l]
 
     def set_title(self):
-        """ Add title to modules.rst, mandatory """
+        """ Add title to auto_modules.rst, mandatory """
         symbol_line = "=" * len(self.fname)
         l_title = self.add_lf([symbol_line, self.fname, symbol_line, "", ""])
         l_title.extend(self.l_file)
@@ -58,10 +58,14 @@ class Modules(object):
             return
         # Write the name of the application
         template = self.add_lf([app.name, "=" * len(app.name), ""])
+        # Description of the application if it exists
+        if app.has_description():
+            template += ".. automodule:: %s\n" % app.name
 
         if not app.modules:
-            print "no modules in app %s" % app.name
-            return
+            template += ".. warning:: This app has no documentation\n"
+
+
         # Write an automodule for each of its modules
         for module in app.modules:
             template += self.add_lf([
@@ -111,6 +115,14 @@ class App(object):
             self.is_internal = False
             pass
 
+    def has_description(self):
+        """Get the application docstring from __init__.py if it exists"""
+        f_init = open("%s/__init__.py" % self.name, "r")
+        content = f_init.read()
+        if '"""' in content or "'''" in content:
+            return True
+        return False
+
 
 if __name__ == '__main__':
     # Define some variables
@@ -129,11 +141,15 @@ if __name__ == '__main__':
 
     # Go to the doc directory and open the index
     os.chdir(settings.DS_ROOT)
-    f_index = open(settings.DS_MASTER_DOC, "r")
-    l_index = f_index.readlines()
-    # Set the file name for modules
-    f_modules.set_name(l_index)
-    f_index.close()
+    try:
+        f_index = open(settings.DS_MASTER_DOC, "r")
+        l_index = f_index.readlines()
+        # Set the file name for modules
+        f_modules.set_name(l_index)
+        f_index.close()
+    except IOError:
+        raise IOError("No file %s/%s exists, please fix it" %
+             (settings.DS_ROOT, settings.DS_MASTER_DOC))
 
     # Write the modules file
     f_modules.write()
