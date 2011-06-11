@@ -1,3 +1,4 @@
 *.swp
 README.html
 django_sphinx_autodoc.egg-info
+dist
