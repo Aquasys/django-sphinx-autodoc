@@ -12,6 +12,9 @@ HERE = os.path.realpath(os.path.dirname(__file__))
 try:
     # Get the list of applications from the settings
     import settings
+    from django.core.management import setup_environ
+    setup_environ(settings)  # some apps will fail to load without some
+                             # specific settings
 except ImportError:
     raise ImportError("The script should be run from the project root")
 
@@ -101,7 +104,11 @@ class App(object):
     def get_path(self):
         """return absolute path for this application"""
         try:
-            return __import__(self.name).__path__[0]
+            path = __import__(self.name).__path__[0]
+            splitedName = self.name.split(".")
+            if len(splitedName) > 1:
+                path = os.path.join(path, *splitedName[1:])
+            return path
         except ImportError:
             print "The application %s couldn't be autodocumented" % self.name
             return False
