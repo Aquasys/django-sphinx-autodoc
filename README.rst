@@ -3,6 +3,13 @@ Django-Sphinx-autodoc
 =====================
 
 
+.. note::
+
+    Being overwhelmed by work, I won’t upgrade this package if nobody asks for
+    it. If you’re capable, please fork and pull request to help me, thanks in
+    advance !
+
+
 Django is very nice in that way you can reuse a lot of applications in your
 projects. It means for big projects that you'll get a long list of applications
 in your settings.INSTALLED_APP.
